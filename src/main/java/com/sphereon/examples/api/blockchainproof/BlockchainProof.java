@@ -76,7 +76,7 @@ public class BlockchainProof implements CommandLineRunner {
                 final var filePath = applicationArguments.getNonOptionArgs().get(1);
                 this.targetFile = new File(filePath);
                 if (!targetFile.exists()) {
-                    throw new IllegalArgumentException(String.format("File %s does not exists!", filePath));
+                    throw new IllegalArgumentException(String.format("File %s does not exist!", filePath));
                 }
             }
             return;
