@@ -8,28 +8,28 @@ import com.sphereon.sdk.blockchain.proof.model.ContentRequest;
 import com.sphereon.sdk.blockchain.proof.model.VerifyContentResponse;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 
-@Controller
-public class VerificationController {
+@Service
+public class VerificationService {
 
     private final TokenRequest tokenRequester;
     private final VerificationApi verificationApi;
-    private final HashingController hashingController;
+    private final HashingService hashingService;
 
     @Value("${sphereon.blockchain-proof-api.upload-method}")
     private UploadMethod uploadMethod;
 
 
-    public VerificationController(final TokenRequest tokenRequester,
-                                  final VerificationApi verificationApi,
-                                  final HashingController hashingController) {
+    public VerificationService(final TokenRequest tokenRequester,
+                               final VerificationApi verificationApi,
+                               final HashingService hashingService) {
         this.tokenRequester = tokenRequester;
         this.verificationApi = verificationApi;
-        this.hashingController = hashingController;
+        this.hashingService = hashingService;
     }
 
 
@@ -70,11 +70,9 @@ public class VerificationController {
         try {
             return new ContentRequest()
                     .hashProvider(ContentRequest.HashProviderEnum.CLIENT) // Using this method you don't actually send your content to the Sphereon cloud
-                    .content(hashingController.hashFileToByteArray(targetFile));
+                    .content(hashingService.hashFileToByteArray(targetFile));
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while hashing file " + targetFile.getAbsolutePath());
         }
     }
-
-
 }

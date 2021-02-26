@@ -1,8 +1,8 @@
 package com.sphereon.examples.api.blockchainproof;
 
-import com.sphereon.examples.api.blockchainproof.controllers.ConfigurationController;
-import com.sphereon.examples.api.blockchainproof.controllers.RegistrationController;
-import com.sphereon.examples.api.blockchainproof.controllers.VerificationController;
+import com.sphereon.examples.api.blockchainproof.controllers.ConfigurationService;
+import com.sphereon.examples.api.blockchainproof.controllers.RegistrationService;
+import com.sphereon.examples.api.blockchainproof.controllers.VerificationService;
 import com.sphereon.examples.api.blockchainproof.enums.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -23,9 +23,9 @@ public class BlockchainProof implements CommandLineRunner {
 
     public static final String ARG_CONFIG_NAME = "config-name";
 
-    private final ConfigurationController configurationController;
-    private final ObjectFactory<RegistrationController> registrationControllers;
-    private final ObjectFactory<VerificationController> verificationControllers;
+    private final ConfigurationService configurationService;
+    private final ObjectFactory<RegistrationService> registrationServiceFactory;
+    private final ObjectFactory<VerificationService> verificationServiceFactory;
     private final ApplicationArguments applicationArguments;
 
     @Value("${sphereon.blockchain-proof-api.configuration-name}")
@@ -35,13 +35,13 @@ public class BlockchainProof implements CommandLineRunner {
     private File targetFile;
 
 
-    public BlockchainProof(final ConfigurationController configurationController,
-                           final ObjectFactory<RegistrationController> registrationControllers,
-                           final ObjectFactory<VerificationController> verificationControllers,
+    public BlockchainProof(final ConfigurationService configurationService,
+                           final ObjectFactory<RegistrationService> registrationServiceFactory,
+                           final ObjectFactory<VerificationService> verificationServiceFactory,
                            final ApplicationArguments applicationArguments) {
-        this.configurationController = configurationController;
-        this.registrationControllers = registrationControllers;
-        this.verificationControllers = verificationControllers;
+        this.configurationService = configurationService;
+        this.registrationServiceFactory = registrationServiceFactory;
+        this.verificationServiceFactory = verificationServiceFactory;
         this.applicationArguments = applicationArguments;
     }
 
@@ -56,13 +56,15 @@ public class BlockchainProof implements CommandLineRunner {
     public void run(final String... args) {
         try {
             readApplicationArguments();
-            configurationController.checkConfiguration(selectConfigName());
+            configurationService.checkConfiguration(selectConfigName());
             switch (operation) {
                 case REGISTER:
-                    registrationControllers.getObject().registerFile(configName, targetFile);
+                    registrationServiceFactory.getObject()
+                            .registerFile(configName, targetFile);
                     break;
                 case VERIFY:
-                    final var response = verificationControllers.getObject().verifyFile(configName, targetFile);
+                    final var response = verificationServiceFactory.getObject()
+                            .verifyFile(configName, targetFile);
                     logVerifyContentResponse(targetFile, response);
                     break;
             }

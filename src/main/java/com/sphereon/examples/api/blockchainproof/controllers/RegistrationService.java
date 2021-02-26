@@ -8,29 +8,29 @@ import com.sphereon.sdk.blockchain.proof.model.ContentRequest;
 import com.sphereon.sdk.blockchain.proof.model.RegisterContentResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 
-@Controller
-public class RegistrationController {
-    private final static org.slf4j.Logger log = LoggerFactory.getLogger(RegistrationController.class);
+@Service
+public class RegistrationService {
+    private final static org.slf4j.Logger log = LoggerFactory.getLogger(RegistrationService.class);
 
     private final TokenRequest tokenRequester;
     private final RegistrationApi registrationApi;
-    private final HashingController hashingController;
+    private final HashingService hashingService;
 
     @Value("${sphereon.blockchain-proof-api.upload-method}")
     private UploadMethod uploadMethod;
 
 
-    public RegistrationController(final TokenRequest tokenRequester,
-                                  final RegistrationApi registrationApi,
-                                  final HashingController hashingController) {
+    public RegistrationService(final TokenRequest tokenRequester,
+                               final RegistrationApi registrationApi,
+                               final HashingService hashingService) {
         this.tokenRequester = tokenRequester;
         this.registrationApi = registrationApi;
-        this.hashingController = hashingController;
+        this.hashingService = hashingService;
     }
 
 
@@ -74,7 +74,7 @@ public class RegistrationController {
         try {
             return new ContentRequest()
                     .hashProvider(ContentRequest.HashProviderEnum.CLIENT) // Using this method you don't actually send your content to the Sphereon cloud
-                    .content(hashingController.hashFileToByteArray(targetFile));
+                    .content(hashingService.hashFileToByteArray(targetFile));
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while hashing file " + targetFile.getAbsolutePath());
         }

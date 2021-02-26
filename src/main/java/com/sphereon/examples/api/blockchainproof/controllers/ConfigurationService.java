@@ -5,19 +5,19 @@ import com.sphereon.libs.authentication.api.TokenRequest;
 import com.sphereon.sdk.blockchain.proof.api.ConfigurationApi;
 import com.sphereon.sdk.blockchain.proof.handler.ApiException;
 import com.sphereon.sdk.blockchain.proof.model.ConfigurationResponse;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
-@Controller
-public class ConfigurationController {
+@Service
+public class ConfigurationService {
 
     private final TokenRequest tokenRequester;
     private final ConfigurationApi configurationApi;
     private final ConfigurationGenerator configurationGenerator;
 
 
-    public ConfigurationController(final TokenRequest tokenRequester,
-                                   final ConfigurationApi configurationApi,
-                                   final ConfigurationGenerator configurationGenerator) {
+    public ConfigurationService(final TokenRequest tokenRequester,
+                                final ConfigurationApi configurationApi,
+                                final ConfigurationGenerator configurationGenerator) {
         this.tokenRequester = tokenRequester;
         this.configurationApi = configurationApi;
         this.configurationGenerator = configurationGenerator;
