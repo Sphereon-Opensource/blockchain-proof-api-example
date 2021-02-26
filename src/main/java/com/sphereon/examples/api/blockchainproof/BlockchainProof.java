@@ -5,6 +5,7 @@ import com.sphereon.examples.api.blockchainproof.controllers.RegistrationControl
 import com.sphereon.examples.api.blockchainproof.controllers.VerificationController;
 import com.sphereon.examples.api.blockchainproof.enums.Operation;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -17,6 +18,8 @@ import java.io.File;
 
 @SpringBootApplication
 public class BlockchainProof implements CommandLineRunner {
+
+    private final static org.slf4j.Logger log = LoggerFactory.getLogger(BlockchainProof.class);
 
     public static final String ARG_CONFIG_NAME = "config-name";
 
@@ -50,7 +53,7 @@ public class BlockchainProof implements CommandLineRunner {
 
 
     @Override
-    public void run(final String... args) throws Exception {
+    public void run(final String... args) {
         try {
             readApplicationArguments();
             configurationController.checkConfiguration(selectConfigName());
@@ -59,7 +62,8 @@ public class BlockchainProof implements CommandLineRunner {
                     registrationControllers.getObject().registerFile(configName, targetFile);
                     break;
                 case VERIFY:
-                    verificationControllers.getObject().verifyFile(configName, targetFile);
+                    final var response = verificationControllers.getObject().verifyFile(configName, targetFile);
+                    logVerifyContentResponse(targetFile, response);
                     break;
             }
         } catch (Exception e) {
@@ -106,5 +110,11 @@ public class BlockchainProof implements CommandLineRunner {
             }
         }
         return configName;
+    }
+
+
+    private void logVerifyContentResponse(final File targetFile,
+                                          final com.sphereon.sdk.blockchain.proof.model.VerifyContentResponse response) {
+        log.info(String.format("Verification result for file %s:%n%s", targetFile.getName(), response));
     }
 }

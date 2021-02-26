@@ -1,12 +1,12 @@
 package com.sphereon.examples.api.blockchainproof.controllers;
 
 import com.sphereon.examples.api.blockchainproof.enums.UploadMethod;
-import com.sphereon.examples.api.blockchainproof.config.ApiConfig;
 import com.sphereon.libs.authentication.api.TokenRequest;
 import com.sphereon.sdk.blockchain.proof.api.VerificationApi;
 import com.sphereon.sdk.blockchain.proof.handler.ApiException;
 import com.sphereon.sdk.blockchain.proof.model.ContentRequest;
-import org.slf4j.LoggerFactory;
+import com.sphereon.sdk.blockchain.proof.model.VerifyContentResponse;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
@@ -15,8 +15,6 @@ import java.io.IOException;
 
 @Controller
 public class VerificationController {
-
-    private final static org.slf4j.Logger log = LoggerFactory.getLogger(ApiConfig.class);
 
     private final TokenRequest tokenRequester;
     private final VerificationApi verificationApi;
@@ -35,39 +33,36 @@ public class VerificationController {
     }
 
 
-    public void verifyFile(final String configName,
-                           final File targetFile) {
+    public VerifyContentResponse verifyFile(final String configName,
+                                            final File targetFile) {
         tokenRequester.execute();
 
         try {
             switch (uploadMethod) {
                 case STREAM:
-                    verifyUsingStream(configName, targetFile);
-                    break;
+                    return verifyUsingStream(configName, targetFile);
                 case CONTENT:
-                    verifyUsingContent(configName, targetFile);
-                    break;
+                    return verifyUsingContent(configName, targetFile);
             }
         } catch (ApiException e) {
             throw new RuntimeException(String.format("Verification request failed with http code %d and message: %s. The response body was %n%s",
                     e.getCode(), e.getMessage(), e.getResponseBody()));
         }
+        throw new NotImplementedException("uploadMethod " + uploadMethod);
     }
 
 
-    private void verifyUsingStream(final String configName,
-                                   final File targetFile) throws ApiException {
-        final var response = verificationApi.verifyUsingStream(configName, targetFile, null, null, null,
+    private VerifyContentResponse verifyUsingStream(final String configName,
+                                                    final File targetFile) throws ApiException {
+        return verificationApi.verifyUsingStream(configName, targetFile, null, null, null,
                 null, null);
-        logResponse(targetFile, response);
     }
 
 
-    private void verifyUsingContent(final String configName,
-                                    final File targetFile) throws ApiException {
-        final var response = verificationApi.verifyUsingContent(configName, buildExistence(targetFile), null, null,
+    private VerifyContentResponse verifyUsingContent(final String configName,
+                                                     final File targetFile) throws ApiException {
+        return verificationApi.verifyUsingContent(configName, buildExistence(targetFile), null, null,
                 null, null);
-        logResponse(targetFile, response);
     }
 
 
@@ -82,8 +77,4 @@ public class VerificationController {
     }
 
 
-    private void logResponse(final File targetFile,
-                             final com.sphereon.sdk.blockchain.proof.model.VerifyContentResponse response) {
-        log.info(String.format("Verification result for file %s:%n%s", targetFile.getName(), response));
-    }
 }

@@ -4,6 +4,7 @@ import com.sphereon.examples.api.blockchainproof.config.ConfigurationGenerator;
 import com.sphereon.libs.authentication.api.TokenRequest;
 import com.sphereon.sdk.blockchain.proof.api.ConfigurationApi;
 import com.sphereon.sdk.blockchain.proof.handler.ApiException;
+import com.sphereon.sdk.blockchain.proof.model.ConfigurationResponse;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -34,12 +35,13 @@ public class ConfigurationController {
     }
 
 
-    private void getOrCreateConfiguration(final String configName) throws ApiException {
+    private ConfigurationResponse getOrCreateConfiguration(final String configName) throws ApiException {
         try {
             final var response = configurationApi.getConfiguration(configName);
+            return response;
         } catch (ApiException e) {
             if (e.getCode() == 404) { // Not found
-                configurationApi.createConfiguration(configurationGenerator.generateDefaultConfiguration(configName));
+                return configurationApi.createConfiguration(configurationGenerator.generateDefaultConfiguration(configName));
             } else {
                 throw e;
             }
