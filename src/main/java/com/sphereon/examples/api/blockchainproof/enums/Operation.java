@@ -3,6 +3,7 @@ package com.sphereon.examples.api.blockchainproof.enums;
 import org.apache.commons.lang3.StringUtils;
 
 public enum Operation {
+
     REGISTER, VERIFY;
 
 

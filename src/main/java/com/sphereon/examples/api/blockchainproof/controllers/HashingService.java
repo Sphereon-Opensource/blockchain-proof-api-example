@@ -1,3 +1,8 @@
+
+/**
+ * This service uses Sphereon's easy-blockchain-lib library to do the file hashing locally.
+ */
+
 package com.sphereon.examples.api.blockchainproof.controllers;
 
 import com.sphereon.libs.blockchain.commons.Digest;

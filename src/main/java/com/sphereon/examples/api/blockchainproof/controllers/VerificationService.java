@@ -1,6 +1,11 @@
+
+/**
+ * This service uses Sphereon's REST API using a Swagger generated Java SDK to call the verify endpoints.
+ */
+
 package com.sphereon.examples.api.blockchainproof.controllers;
 
-import com.sphereon.examples.api.blockchainproof.enums.UploadMethod;
+import com.sphereon.examples.api.blockchainproof.enums.HashProviderMode;
 import com.sphereon.libs.authentication.api.TokenRequest;
 import com.sphereon.sdk.blockchain.proof.api.VerificationApi;
 import com.sphereon.sdk.blockchain.proof.handler.ApiException;
@@ -20,8 +25,8 @@ public class VerificationService {
     private final VerificationApi verificationApi;
     private final HashingService hashingService;
 
-    @Value("${sphereon.blockchain-proof-api.upload-method}")
-    private UploadMethod uploadMethod;
+    @Value("${sphereon.blockchain-proof-api.hash-provider-mode}")
+    private HashProviderMode hashProviderMode;
 
 
     public VerificationService(final TokenRequest tokenRequester,
@@ -35,20 +40,22 @@ public class VerificationService {
 
     public VerifyContentResponse verifyFile(final String configName,
                                             final File targetFile) {
-        tokenRequester.execute();
+        tokenRequester.execute(); // Fetch a new access token if not there yet or is about to expire
 
         try {
-            switch (uploadMethod) {
-                case STREAM:
+            switch (hashProviderMode) {
+                case SERVER_SIDE:
+                    // Send the content to the Sphereon cloud to let the hashing take place there.
                     return verifyUsingStream(configName, targetFile);
-                case CONTENT:
+                case CLIENT_SIDE:
+                    // We can only verify client side generated hashes using the verifyUsingContent operation
                     return verifyUsingContent(configName, targetFile);
             }
         } catch (ApiException e) {
             throw new RuntimeException(String.format("Verification request failed with http code %d and message: %s. The response body was %n%s",
                     e.getCode(), e.getMessage(), e.getResponseBody()));
         }
-        throw new NotImplementedException("uploadMethod " + uploadMethod);
+        throw new NotImplementedException("hashProviderMode " + hashProviderMode);
     }
 
 
@@ -69,7 +76,8 @@ public class VerificationService {
     private ContentRequest buildExistence(final File targetFile) {
         try {
             return new ContentRequest()
-                    .hashProvider(ContentRequest.HashProviderEnum.CLIENT) // Using this method you don't actually send your content to the Sphereon cloud
+                    /* When using HashProviderEnum.CLIENT you don't actually send your content to the Sphereon cloud,
+                        but will have to provide the hash. */
                     .content(hashingService.hashFileToByteArray(targetFile));
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while hashing file " + targetFile.getAbsolutePath());

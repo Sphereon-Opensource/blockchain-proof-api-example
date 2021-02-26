@@ -25,7 +25,8 @@ public class ConfigurationService {
 
 
     public void checkConfiguration(final String configName) {
-        tokenRequester.execute();
+        tokenRequester.execute(); // Fetch a new access token if not there yet or is about to expire
+
         try {
             getOrCreateConfiguration(configName);
         } catch (ApiException e) {
@@ -40,7 +41,7 @@ public class ConfigurationService {
             final var response = configurationApi.getConfiguration(configName);
             return response;
         } catch (ApiException e) {
-            if (e.getCode() == 404) { // Not found
+            if (e.getCode() == 404) { // Not found, lets try to create it.
                 return configurationApi.createConfiguration(configurationGenerator.generateDefaultConfiguration(configName));
             } else {
                 throw e;

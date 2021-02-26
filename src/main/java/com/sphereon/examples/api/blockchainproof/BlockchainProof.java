@@ -4,6 +4,7 @@ import com.sphereon.examples.api.blockchainproof.controllers.ConfigurationServic
 import com.sphereon.examples.api.blockchainproof.controllers.RegistrationService;
 import com.sphereon.examples.api.blockchainproof.controllers.VerificationService;
 import com.sphereon.examples.api.blockchainproof.enums.Operation;
+import com.sphereon.sdk.blockchain.proof.model.RegisterContentResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -56,16 +57,21 @@ public class BlockchainProof implements CommandLineRunner {
     public void run(final String... args) {
         try {
             readApplicationArguments();
+
+            // First check if the configured configuration name is already known for the current account. Create it when it's not.
             configurationService.checkConfiguration(selectConfigName());
+
+            // Execute to requested operation
             switch (operation) {
                 case REGISTER:
-                    registrationServiceFactory.getObject()
+                    final var registerContentResponse = registrationServiceFactory.getObject()
                             .registerFile(configName, targetFile);
+                    logRegisterContentResponse(targetFile, registerContentResponse);
                     break;
                 case VERIFY:
-                    final var response = verificationServiceFactory.getObject()
+                    final var verifyContentResponse = verificationServiceFactory.getObject()
                             .verifyFile(configName, targetFile);
-                    logVerifyContentResponse(targetFile, response);
+                    logVerifyContentResponse(targetFile, verifyContentResponse);
                     break;
             }
         } catch (Exception e) {
@@ -87,11 +93,11 @@ public class BlockchainProof implements CommandLineRunner {
             }
             return;
         }
-        printErrorAndExit();
+        printArgumentsMessageAndExit();
     }
 
 
-    private void printErrorAndExit() {
+    private void printArgumentsMessageAndExit() {
         System.err.println("This program needs to be called with a minimum of two arguments:"
                 + System.lineSeparator() + "\tregister <file path> [--config-name <my-config-name>]"
                 + System.lineSeparator() + "\tor"
@@ -112,6 +118,13 @@ public class BlockchainProof implements CommandLineRunner {
             }
         }
         return configName;
+    }
+
+
+    private void logRegisterContentResponse(final File targetFile,
+                                            final RegisterContentResponse response) {
+        log.info(String.format("Registration result for file %s:%n%s", targetFile.getName(), response));
+        log.info("Please note that it can take up to 10 minutes before this record is fully anchored on the Blockchain.");
     }
 
 

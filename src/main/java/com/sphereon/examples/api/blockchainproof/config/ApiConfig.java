@@ -1,3 +1,8 @@
+
+/**
+ * This configuration bean configures the API's to use Sphereon's authentication-lib library for OAuth2 token retrieval.
+ */
+
 package com.sphereon.examples.api.blockchainproof.config;
 
 import com.sphereon.libs.authentication.api.AuthenticationApi;
@@ -28,12 +33,14 @@ public class ApiConfig {
 
     @Bean
     AuthenticationApi authenticationApi(@Value("${sphereon.authentication.client-id}") String clientId) {
-        final ApiConfiguration config = new ApiConfiguration.Builder()
+
+        // When the client id & secret are provided as system properties it will use those, otherwise it will try the system environment variables.
+        final var apiConfiguration = new ApiConfiguration.Builder()
                 .withApplication(APPLICATION_NAME)
                 .withPersistenceType(StringUtils.isEmpty(clientId) ? PersistenceType.SYSTEM_ENVIRONMENT : PersistenceType.DISABLED)
                 .build();
         return new AuthenticationApi.Builder()
-                .withConfiguration(config)
+                .withConfiguration(apiConfiguration)
                 .build();
     }
 
@@ -52,7 +59,7 @@ public class ApiConfig {
 
     @Bean
     public ConfigurationApi configurationApi(TokenRequest tokenRequester) {
-        ConfigurationApi configurationApi = new ConfigurationApi();
+        final var configurationApi = new ConfigurationApi();
         configureApiClient(tokenRequester, configurationApi.getApiClient());
         return configurationApi;
     }
@@ -60,7 +67,7 @@ public class ApiConfig {
 
     @Bean
     public RegistrationApi registrationApi(TokenRequest tokenRequester) {
-        RegistrationApi registrationApi = new RegistrationApi();
+        final var registrationApi = new RegistrationApi();
         configureApiClient(tokenRequester, registrationApi.getApiClient());
         return registrationApi;
     }
@@ -68,7 +75,7 @@ public class ApiConfig {
 
     @Bean
     public VerificationApi verificationApi(TokenRequest tokenRequester) {
-        VerificationApi verificationApi = new VerificationApi();
+        final var verificationApi = new VerificationApi();
         configureApiClient(tokenRequester, verificationApi.getApiClient());
         return verificationApi;
     }
@@ -79,7 +86,6 @@ public class ApiConfig {
         apiClient.setConnectTimeout(TIMEOUT);
         apiClient.getHttpClient().setReadTimeout(TIMEOUT, TimeUnit.MILLISECONDS);
         apiClient.getHttpClient().setWriteTimeout(TIMEOUT, TimeUnit.MILLISECONDS);
-        apiClient.setAccessToken(tokenRequester.execute().getAccessToken());
         tokenRequester.addTokenResponseListener(new TokenRequest.TokenResponseListener() {
             @Override
             public void tokenResponse(TokenResponse tokenResponse) {
