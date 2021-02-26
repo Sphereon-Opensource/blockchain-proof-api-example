@@ -43,7 +43,7 @@ public class RegistrationController {
                 case STREAM:
                     registerUsingStream(configName, targetFile);
                     break;
-                case BASE64_CONTENT:
+                case CONTENT:
                     registerUsingContent(configName, targetFile);
                     break;
             }

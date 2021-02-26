@@ -39,7 +39,7 @@ java -jar blockchain-proof.jar register <path-to-file> [--config-name <my-config
 When no config name is supplied, it will take it from application.properties.
 
 ### Upload method
-The example implements two upload methods, STREAM & BASE64_CONTENT which can be configured in application.properties. 
+The example implements two upload methods, STREAM & CONTENT which can be configured in application.properties. 
 (You can copy the application.properties file from the project's resources directory to config/application.properties relative of your working directory)
 ```
 sphereon.blockchain-proof-api.upload-method=STREAM
@@ -49,7 +49,7 @@ A powerful extra feature you get in this mode is the support for hashing documen
 saves a PDF file, the new file will still validate as long as the content didn't change.
 
 ```
-sphereon.blockchain-proof-api.upload-method=BASE64_CONTENT
+sphereon.blockchain-proof-api.upload-method=CONTENT
 ```
 In this mode the file to register or verify is hashed locally. No content is actually sent over the network, only the hash.
 This is the most secure option for documents containing private/confidential information. Content hashing is not available in this mode as

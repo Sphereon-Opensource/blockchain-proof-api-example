@@ -44,7 +44,7 @@ public class VerificationController {
                 case STREAM:
                     verifyUsingStream(configName, targetFile);
                     break;
-                case BASE64_CONTENT:
+                case CONTENT:
                     verifyUsingContent(configName, targetFile);
                     break;
             }
