@@ -1,4 +1,4 @@
-package com.sphereon.examples.api.blockchainproof.controllers;
+package com.sphereon.examples.api.blockchainproof.services;
 
 import com.sphereon.examples.api.blockchainproof.config.ConfigurationGenerator;
 import com.sphereon.libs.authentication.api.TokenRequest;

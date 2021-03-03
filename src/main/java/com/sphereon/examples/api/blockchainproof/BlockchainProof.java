@@ -1,9 +1,9 @@
 package com.sphereon.examples.api.blockchainproof;
 
-import com.sphereon.examples.api.blockchainproof.controllers.ConfigurationService;
-import com.sphereon.examples.api.blockchainproof.controllers.RegistrationService;
-import com.sphereon.examples.api.blockchainproof.controllers.VerificationService;
 import com.sphereon.examples.api.blockchainproof.enums.Operation;
+import com.sphereon.examples.api.blockchainproof.services.ConfigurationService;
+import com.sphereon.examples.api.blockchainproof.services.RegistrationService;
+import com.sphereon.examples.api.blockchainproof.services.VerificationService;
 import com.sphereon.sdk.blockchain.proof.model.RegisterContentResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;

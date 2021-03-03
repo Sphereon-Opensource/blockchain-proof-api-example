@@ -3,7 +3,7 @@
  * This service uses Sphereon's easy-blockchain-lib library to do the file hashing locally.
  */
 
-package com.sphereon.examples.api.blockchainproof.controllers;
+package com.sphereon.examples.api.blockchainproof.services;
 
 import com.sphereon.libs.blockchain.commons.Digest;
 import org.springframework.stereotype.Service;
