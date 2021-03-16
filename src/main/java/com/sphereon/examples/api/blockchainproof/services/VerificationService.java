@@ -78,6 +78,7 @@ public class VerificationService {
             return new ContentRequest()
                     /* When using HashProviderEnum.CLIENT you don't actually send your content to the Sphereon cloud,
                         but will have to provide the hash. */
+                    .hashProvider(ContentRequest.HashProviderEnum.CLIENT)
                     .content(hashingService.hashFileToByteArray(targetFile));
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while hashing file " + targetFile.getAbsolutePath());
